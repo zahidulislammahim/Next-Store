@@ -21,15 +21,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <ClerkProvider>
+    <ClerkProvider appearance={{
+      // baseTheme: dark,
+    }}>
+0      <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
           <Navbar></Navbar>
-          <div className="mt-20 flex-1">{children}</div>
+          <div className="mt-11 md:mt-12 flex-1">{children}</div>
           <Footer></Footer>
         </body>
-      </ClerkProvider>
-    </html>
+      </html>
+    </ClerkProvider>
   );
 }

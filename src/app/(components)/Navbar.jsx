@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { MdOutlineAddBusiness } from "react-icons/md";
 import {
   SignedIn,
   SignedOut,
@@ -16,8 +17,8 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "All Products", path: "/all-products" },
-    { name: "Contact", path: "/contact" },
+    { name: "Products", path: "/all-products" },
+    { name: "Add Product", path: "/add-product" },
     { name: "About", path: "/about" },
   ];
 
@@ -64,17 +65,15 @@ const Navbar = () => {
         </SignedOut>
 
         <SignedIn>
-          <div>
-            <UserButton
-              afterSignOutUrl="/"
-              appearance={{
-                elements: {
-                  avatarBox: "rounded-full", // keeps it circular
-                },
-              }}
-              style={{ width: "150px", height: "150px" }} // exact size
-            />
-          </div>
+          <UserButton >
+            <UserButton.MenuItems>
+          <UserButton.Link
+            label="Create organization"
+            labelIcon={<MdOutlineAddBusiness />}
+            href="/add-product"
+          />
+        </UserButton.MenuItems>
+          </UserButton>
         </SignedIn>
       </div>
 
