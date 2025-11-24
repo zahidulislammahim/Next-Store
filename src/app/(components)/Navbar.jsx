@@ -2,24 +2,29 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { MdOutlineAddBusiness } from "react-icons/md";
+import { AiOutlineProduct } from "react-icons/ai";
 import {
   SignedIn,
   SignedOut,
   UserButton,
   SignInButton,
   SignUpButton,
+  useUser,
 } from "@clerk/nextjs";
 import Link from "next/link";
+
+
 
 const Navbar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { user } = useUser();
 
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Products", path: "/all-products" },
-    { name: "Add Product", path: "/add-product" },
-    { name: "About", path: "/about" },
+    ...(user ? [{ name: "Add Product", path: "/add-product" }] : []),
+    { name: "Contact", path: "/contact" },
   ];
 
   return (
@@ -37,7 +42,7 @@ const Navbar = () => {
             <Link
               key={i}
               href={link.path}
-              className={`group flex flex-col gap-0.5 text-white`}>
+              className={`group flex flex-col gap-0.5 text-white transition-all hover:-translate-y-0.5 duration-300`}>
               {link.name}
               <div
                 className={`h-0.5 bg-white transition-all duration-300 ${
@@ -65,14 +70,21 @@ const Navbar = () => {
         </SignedOut>
 
         <SignedIn>
-          <UserButton >
+          <UserButton>
             <UserButton.MenuItems>
-          <UserButton.Link
-            label="Create organization"
-            labelIcon={<MdOutlineAddBusiness />}
-            href="/add-product"
-          />
-        </UserButton.MenuItems>
+              <UserButton.Link
+                label="Add Product"
+                labelIcon={<MdOutlineAddBusiness />}
+                href="/add-product"
+              />
+            </UserButton.MenuItems>
+            <UserButton.MenuItems>
+              <UserButton.Link
+                label="Manage Product"
+                labelIcon={<AiOutlineProduct />}
+                href="/manage-product"
+              />
+            </UserButton.MenuItems>
           </UserButton>
         </SignedIn>
       </div>
@@ -109,6 +121,26 @@ const Navbar = () => {
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
+        <div >
+          <SignedIn>
+            <UserButton >
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="Add Product"
+                  labelIcon={<MdOutlineAddBusiness />}
+                  href="/add-product"
+                />
+              </UserButton.MenuItems>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="Manage Product"
+                  labelIcon={<AiOutlineProduct />}
+                  href="/manage-product"
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          </SignedIn>
+        </div>
         {navLinks.map((link, i) => {
           const isActive = pathname === link.path;
           return (
@@ -143,12 +175,6 @@ const Navbar = () => {
             </button>
           </SignUpButton>
         </SignedOut>
-
-        <SignedIn>
-          <div className="w-40">
-            <UserButton />
-          </div>
-        </SignedIn>
       </div>
     </nav>
   );
