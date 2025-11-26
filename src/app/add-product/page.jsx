@@ -2,40 +2,67 @@
 import { useClerk, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import ProtectRoute from "../(components)/ProtectRoute";
+import Loading from "../(components)/Loading";
 
 const AddProduct = () => {
-  const router = useRouter();
   const { user } = useUser();
   const { openSignIn } = useClerk();
   const [showSuccess, setShowSuccess] = useState(false);
   const [shortDescription, setShortDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState("");
+  const [otherCategory, setOtherCategory] = useState("");
+
+  useEffect(() => {
+    if (!user) {
+      const t = setTimeout(() => {
+        setLoading(false);
+      }, 500);
+
+      return () => clearTimeout(t);
+    }
+  }, [loading, user]);
 
   if (!user) {
+    if (loading) {
+      return <Loading></Loading>;
+    }
     openSignIn();
-    return (
-      <h1 className="text-7xl text-center font-extrabold mt-10 md:mt-40 text-indigo-500">
-        Please Login First
-      </h1>
-    );
+    return <ProtectRoute />;
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const form = e.target;
     const data = new FormData(form);
-    
+
     const formData = Object.fromEntries(data.entries());
-    formData.createdAt = new Date().toISOString();
+    formData.email = user?.primaryEmailAddress?.emailAddress;
+    formData.userName = user?.fullName;
+    formData.userImage = user?.imageUrl;
+    formData.createdDate = new Date().toISOString().split("T")[0];
+    formData.createdTime = new Date().toISOString().split("T")[1].split(".")[0];
+
+    try {
+      setIsSubmitting(true);
+      const res = await axios.post("http://localhost:5000/products", formData);
+      console.log("Server Response:", res.data);
+    } catch (error) {
+      console.error("Error submitting product:", error);
+      setIsSubmitting(false);
+    }
 
     console.log(formData);
     setShowSuccess(true);
     setIsSubmitting(true);
     setTimeout(() => {
-        window.location.href = "/all-products";
-      }, 1500);
+      window.location.href = "/all-products";
+    }, 1500);
   };
 
   return (
@@ -188,7 +215,7 @@ const AddProduct = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* <div>
               <div>
                 <label
                   htmlFor="category"
@@ -208,25 +235,57 @@ const AddProduct = () => {
                   <option value="Books">Books</option>
                   <option value="Beauty">Beauty</option>
                   <option value="Toys">Toys</option>
-                  <option value="Other">Other</option>
+                  <option value="Toys">Clothing</option>
+                  <option value="Other">Others</option>
+                </select>
+              </div>
+            </div> */}
+            <div className={`grid grid-cols-1 gap-6 sm:grid-cols-1 ${category === "Other" && ("sm:grid-cols-2")} `}>
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-2">
+                  Category *
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  required
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                  <option value="">Select a category</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Fashion">Fashion</option>
+                  <option value="Home & Garden">Home & Garden</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Books">Books</option>
+                  <option value="Beauty">Beauty</option>
+                  <option value="Toys">Toys</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Other">Others</option>
                 </select>
               </div>
 
-              <div>
-                <label
-                  htmlFor="priority"
-                  className="block text-sm font-medium text-gray-700 mb-2">
-                  Priority
-                </label>
-                <select
-                  id="priority"
-                  name="priority"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
+              {category === "Other" && (
+                <div>
+                  <label
+                    htmlFor="otherCategory"
+                    className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter your category
+                  </label>
+                  <input
+                    type="text"
+                    id="otherCategory"
+                    name="otherCategory"
+                    value={otherCategory}
+                    required
+                    onChange={(e) => setOtherCategory(e.target.value)}
+                    placeholder="Type your category"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+              )}
             </div>
 
             <div>
@@ -238,6 +297,7 @@ const AddProduct = () => {
               <input
                 type="url"
                 id="imageUrl"
+                required
                 name="imageUrl"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 placeholder="https://example.com/image.jpg"
@@ -251,41 +311,33 @@ const AddProduct = () => {
                 All Product
               </button>
 
-              {/* <button
-                type="submit"
-                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium">
-                Add Product
-              </button> */}
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-lg transition-colors font-medium flex items-center">
-                {" "}
                 {isSubmitting ? (
                   <>
-                    {" "}
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                       fill="none"
                       viewBox="0 0 24 24">
-                      {" "}
                       <circle
                         className="opacity-25"
                         cx="12"
                         cy="12"
                         r="10"
                         stroke="currentColor"
-                        strokeWidth="4"></circle>{" "}
+                        strokeWidth="4"></circle>
                       <path
                         className="opacity-75"
                         fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>{" "}
-                    </svg>{" "}
-                    Adding Product...{" "}
+                    </svg>
+                    Adding Product...
                   </>
                 ) : (
                   "Add Product"
-                )}{" "}
+                )}
               </button>
             </div>
           </form>

@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react'
 
-export default function loading() {
+export default function Loading() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
@@ -8,5 +8,5 @@ export default function loading() {
         <p className="mt-4 text-gray-600">Loading...</p>
       </div>
     </div>
-  );
+  )
 }

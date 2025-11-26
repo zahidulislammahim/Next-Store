@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -26,30 +27,30 @@ async function run() {
     const db = client.db("next-store");
     const productsCollection = db.collection("products");
 
-    // // recent add product API
-    // app.get("/recent-products", async (req, res) => {
-    //   const cursor = productsCollection
-    //     .find()
-    //     .sort({
-    //       created_at: -1,
-    //     })
-    //     .limit(6);
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
+    // recent add product API
+    app.get("/recent-products", async (req, res) => {
+      const cursor = productsCollection
+        .find()
+        .sort({
+          createAt: -1,
+        })
+        .limit(4);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     // // My product API
-    // app.get("/my-products", async (req, res) => {
-    //   const { userId, email } = req.query;
+    app.get("/my-Products", async (req, res) => {
+      const email = req.query.email;
+      const query = {};
+      if (email) {
+        query.email = email;
+      }
 
-    //   const query = {};
-
-    //   if (userId) query.userId = userId;
-    //   if (email) query.email = email;
-
-    //   const result = await productsCollection.find(query).toArray();
-    //   res.send(result);
-    // });
+      const cursor = productsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     // get all product API
     app.get("/products", async (req, res) => {
@@ -58,21 +59,28 @@ async function run() {
       res.send(result);
     });
 
-
-    // // product Get Details by id
-    // app.get("/products/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: new ObjectId(id) };
-    //   const cursor = await productsCollection.findOne(query);
-    //   res.send(cursor);
-    // });
-
+    //  Get product Details by id
+    app.get("/products/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: new ObjectId(id) };
+      const cursor = await productsCollection.findOne(query);
+      res.send(cursor);
+    });
 
     // product add API
-    app.post("/product", async (req, res) => {
+    app.post("/products", async (req, res) => {
       const event = req.body;
       event.createAt = new Date();
       const result = await productsCollection.insertOne(event);
+      res.send(result);
+    });
+
+    //Delete My Product
+    app.delete("/products/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await productsCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
       res.send(result);
     });
 
