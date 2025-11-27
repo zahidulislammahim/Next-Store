@@ -6,7 +6,7 @@ A modern eCommerce web application built with **Next.js**, **MongoDB**, and **Cl
 
 ## ⭐ Overview
 
-Next Store is a full‑stack eCommerce application where users can browse products, add them to the cart, manage orders, and checkout. Admins can add, edit, and manage products with a dedicated backend.
+Next Store is a full‑stack eCommerce application where users can browse products, add them to the cart, manage orders, and check out. Admins can add, edit, and manage products with a dedicated backend.
 
 ---
 
@@ -61,7 +61,7 @@ Next-Store/
 * User login/signup with Clerk
 * Google & Email authentication
 * Clerk ProtectRoute & Webhooks
-* Role-based access for admin panel
+* Role-based access for the admin panel
 
 ---
 
@@ -102,7 +102,7 @@ npm run dev
 
 ## ⚙️ Backend Setup
 
-Go to backend folder:
+Go to the backend folder:
 
 ```bash
 cd backend
@@ -135,7 +135,7 @@ node server.js
 * Add to cart
 * Cart management
 * Checkout flow
-* Order save in database
+* Order saved in the database
 
 ---
 
@@ -181,6 +181,6 @@ node server.js
 ## 👨‍💻 Author
 
 **Zahidul Islam Mahim**
-Web Developer | Graphics Designer | Tech Enthusiast
+MERN Stack Developer
 
-GitHub: github.com/zahidulislammahim
+If you like this project, don't forget to ⭐ the repository!
