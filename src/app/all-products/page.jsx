@@ -9,7 +9,7 @@ const Page = () => {
   const [Data, setData] = useState([]);
 
   useEffect(() => {
-    axios("http://localhost:5000/products").then((data) => setData(data.data));
+    axios("https://next-store-ejp-backend.vercel.app/products").then((data) => setData(data.data));
   }, []);
 
   const [selectedCategory, setSelectedCategory] = useState("All");

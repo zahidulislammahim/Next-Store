@@ -17,7 +17,7 @@ export default function Page() {
     const { openSignIn } = useClerk();
 
   useEffect(() => {
-    axios(`http://localhost:5000/products/${id}`)
+    axios(`https://next-store-ejp-backend.vercel.app/products/${id}`)
       .then((res) => {
         setProduct(res.data);
       })

@@ -25,7 +25,7 @@ export default function Page() {
     const fetchproducts = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/my-products?email=${email}`
+          `https://next-store-ejp-backend.vercel.app/my-products?email=${email}`
         );
         const data = await res.json();
         setProduct(data);
@@ -54,7 +54,7 @@ export default function Page() {
 
     try {
       const { data } = await axios.delete(
-        `http://localhost:5000/products/${id}`
+        `https://next-store-ejp-backend.vercel.app/products/${id}`
       );
 
       if (data.deletedCount > 0) {

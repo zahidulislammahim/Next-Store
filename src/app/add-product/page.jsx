@@ -50,7 +50,7 @@ const AddProduct = () => {
 
     try {
       setIsSubmitting(true);
-      const res = await axios.post("http://localhost:5000/products", formData);
+      const res = await axios.post("https://next-store-ejp-backend.vercel.app/products", formData);
       console.log("Server Response:", res.data);
     } catch (error) {
       console.error("Error submitting product:", error);

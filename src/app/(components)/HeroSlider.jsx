@@ -15,7 +15,7 @@ const HeroSlider = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/products")
+      .get("https://next-store-ejp-backend.vercel.app/products")
       .then((res) => setData(res.data))
       .catch((err) => console.error(err));
   }, []);

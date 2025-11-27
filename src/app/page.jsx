@@ -15,7 +15,7 @@ export default function Home() {
   const [Data, setData] = useState([]);
 
   useEffect(() => {
-    axios("http://localhost:5000/recent-products").then((data) =>
+    axios("https://next-store-ejp-backend.vercel.app/recent-products").then((data) =>
       setData(data.data)
     );
   }, []);
