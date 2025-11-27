@@ -12,6 +12,8 @@ import axios from "axios";
 export default function Page() {
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedIssue, setSelectedProduct] = useState(null);
   const { openSignIn } = useClerk();
   const [products, setProduct] = useState([]);
 
@@ -89,6 +91,14 @@ export default function Page() {
     openSignIn();
     return <ProtectRoute />;
   }
+  const handleEdit = (product) => {
+    setSelectedProduct(product);
+    setOpenModal(true);
+  };
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedProduct(null);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -144,6 +154,7 @@ export default function Page() {
                           src={product.imageUrl}
                           alt={product.title}
                           fill
+                          sizes="80px"
                           className="object-cover rounded-md border"
                         />
                       </div>
@@ -232,9 +243,16 @@ export default function Page() {
                       className="bg-green-500 pt-2 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm transition">
                       View
                     </Link>
-                    <button className="bg-sky-500 pt-2 hover:bg-sky-600 text-white px-3 py-1 rounded-md text-sm transition">
+                    <button
+                      onClick={() => handleEdit(product._id)}
+                      className="bg-sky-500 pt-2 hover:bg-sky-600 text-white px-3 py-1 rounded-md text-sm transition">
                       Edit
                     </button>
+                    <EditProduct
+                      open={openModal}
+                      onClose={handleClose}
+                      data={selectedIssue}
+                    />
                     <button
                       onClick={() => handleDelete(product._id)}
                       className="bg-red-600 pt-2 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition">

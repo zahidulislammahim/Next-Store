@@ -6,9 +6,15 @@ import Image from "next/image";
 import BackButton from "@/app/(components)/BackButton";
 import { useParams } from "next/navigation";
 import axios from "axios";
+import { useClerk, useUser } from "@clerk/nextjs";
+import ProtectRoute from "@/app/(components)/ProtectRoute";
+import Loading from "@/app/(components)/Loading";
 export default function Page() {
+  const { user } = useUser();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+    const { openSignIn } = useClerk();
 
   useEffect(() => {
     axios(`http://localhost:5000/products/${id}`)
@@ -18,6 +24,35 @@ export default function Page() {
       .catch((err) => console.log(err));
   }, [id]);
 
+  useEffect(() => {
+    if (!user) {
+      const t = setTimeout(() => {
+        setLoading(false);
+      }, 500);
+
+      return () => clearTimeout(t);
+    }
+  }, [user]);
+
+  if (!user) {
+    if (loading) {
+      return <Loading></Loading>;
+    }
+    openSignIn();
+    return <ProtectRoute />;
+  }
+
+  let userName = product?.userName;
+  let email = product?.email;
+  let userImage = product?.userImage;
+
+  // If product matches user → override with logged in user info
+  if (product?.email === user?.primaryEmailAddress?.emailAddress) {
+    userName = user?.fullName;
+    email = user?.primaryEmailAddress?.emailAddress;
+    userImage = user?.imageUrl;
+  }
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-linear-to-br from-gray-50 to-indigo-50">
       <main className="flex w-full flex-1 justify-center py-8 px-4 sm:px-6 lg:px-8">
@@ -26,7 +61,6 @@ export default function Page() {
           <div className="flex justify-between items-center">
             <BackButton></BackButton>
             <div className="flex gap-4">
-             
               <div className="flex items-center gap-1 bg-indigo-100 py-2 px-3 rounded-lg ">
                 <FaClock className="text-indigo-500" />
                 {product?.createdTime}
@@ -42,8 +76,7 @@ export default function Page() {
               className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end min-h-100 sm:min-h-200"
               alt="Abstract gradient waves in blue and purple hues"
               style={{
-                backgroundImage:
-                  `url(${product?.imageUrl})`,
+                backgroundImage: `url(${product?.imageUrl})`,
               }}></div>
 
             <div className="flex flex-col p-6 sm:p-8">
@@ -52,7 +85,6 @@ export default function Page() {
                   {product?.title}
                 </h1>
               </div>
-
 
               <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 border-t border-indigo-500  pt-6 sm:grid-cols-2 md:grid-cols-3">
                 <div className="flex flex-col gap-1">
@@ -68,7 +100,9 @@ export default function Page() {
                     Category
                   </p>
                   <p className="text-base font-medium bg-indigo-50  px-5 rounded-lg py-1 text-center">
-                    {product?.category === "Other" ? (product?.otherCategory) : (product?.category)}
+                    {product?.category === "Other"
+                      ? product?.otherCategory
+                      : product?.category}
                   </p>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -93,14 +127,14 @@ export default function Page() {
                   </p>
                   <p className=" text-base font-medium bg-indigo-50  px-5 rounded-lg py-1 text-center">
                     {product?.stock > 0 ? (
-                        <span className="text-green-600 font-semibold">
-                          In Stock 
-                        </span>
-                      ) : (
-                        <span className="text-red-600 font-semibold">
-                          Stock Out
-                        </span>
-                      )}
+                      <span className="text-green-600 font-semibold">
+                        In Stock
+                      </span>
+                    ) : (
+                      <span className="text-red-600 font-semibold">
+                        Stock Out
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -118,25 +152,21 @@ export default function Page() {
                   Full Description
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-text-secondary-light dark:text-text-secondary-dark">
-                 {product?.fullDescription}
+                  {product?.fullDescription}
                 </p>
               </div>
               <div className="mt-8 border-t border-indigo-500 pt-6 flex">
                 <div className="relative w-10 h-10 mr-2 items-center">
                   <Image
-                    src={product?.userImage || "/default.jpg"}
-                    alt={product?.userName || "User"}
+                    src={userImage}
+                    alt={userName}
                     fill
                     className="rounded-full object-cover"
                   />
                 </div>
                 <div className="">
-                  <div>
-                    {product?.userName}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {product?.email}
-                  </div>
+                  <div>{userName}</div>
+                  <div className="text-sm text-gray-600">{email}</div>
                 </div>
               </div>
             </div>

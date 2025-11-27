@@ -110,6 +110,8 @@ const Page = () => {
                       src={item.imageUrl || ""}
                       alt={item.title}
                       fill
+                      sizes="100%"
+                      loading="eager"
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
